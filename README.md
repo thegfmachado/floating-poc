@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# 🚀 Floating-PoC
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Proof-of-concept demonstrating a floating UI component that can be anchored either to a DOM element (e.g. button, input) or to a text caret inside an input/textarea — built with **vanilla HTML + JS** for controls/anchors and **React + TypeScript + Popper.js** for the floating overlay.
 
-Currently, two official plugins are available:
+It’s designed as a minimal, decoupled “floating component engine” — a base for tooltips, AI-suggestions, autocompletes, contextual menus, etc.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 💡 Motivation
 
-## React Compiler
+Often apps need a floating panel (tooltip / suggestion list / menu) that:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- can anchor to a widget (button, input, etc.), **or**
+- to the current caret position inside a text input or textarea
 
-## Expanding the ESLint configuration
+This PoC shows a clean separation:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- The **anchor and controls live outside React** — plain HTML + JS.
+- React only renders the floating panel, and gets updates via **custom events**.
+- Uses **Popper.js (@popperjs/core)** inside React to handle positioning/offset/placement.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+You get: decoupled layers, flexible anchoring, caret awareness, minimal overhead.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Project structure
+
+```
+/
+  ├─ index.html               ← controls panel + anchors (button / input / textarea)
+  ├─ src/
+  │    ├─ form-control.ts     ← listens controls panel, updates global form state + emits config events
+  │    ├─ anchor-setup.ts     ← attaches events to anchors (hover, input, caret) and emits update events
+  │    ├─ event-utils.ts      ← helpers to dispatch custom floating events
+  │    ├─ App.tsx             ← mounts React + Floating component
+  │    ├─ Floating.tsx        ← React floating component using Popper.js
+  │    └─ ...
+  └─ README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📦 How to run locally
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Clone the repo
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+3. Start the dev server
+   ```bash
+   npm run dev
+   ```
+4. Open the page in your browser.
+
+---
+
+## 🧩 How it works (data & event flow)
+
+1. The form panel (outside React) maintains a state object:  
+   `{ elementType, mode, placement, offset }`.
+2. On any change, it dispatches a `"form:config"` CustomEvent.
+3. Anchors (button/input/textarea) emit `"floating:update"` when hovered, typed into, or when caret moves.
+4. React listens, updates Popper config and anchor rect.
+5. Popper.js computes the floating panel’s position.
+
+Result: completely decoupled anchor logic + reactive floating component.
+
+---
+
+## 📌 When to use this pattern
+
+- Floating UI that can be anchored to multiple element types.
+- Caret-based positioning for autocomplete / AI suggestions.
+- Need to keep anchor outside React (e.g., design systems, host apps).
+- Need a simple way to update placement/offset in real time.
+
+---
+
+## ⚠️ Limitations
+
+- No flip/preventOverflow modifiers (can be added).
+- No animations.
+- Caret tracking is basic (works for simple input/textarea).
+- No accessibility layer yet.
+
+---
+
+## 🔄 Possible Improvements
+
+- Add Popper modifiers (flip, preventOverflow).
+- Add animations.
+- Add accessibility (ARIA, keyboard nav).
+- Support contentEditable anchors.
+- Make the floating component a reusable library.
+
+---
+
+## 💻 Tech stack
+
+- React + TypeScript
+- Popper.js
+- Vite
+- Vanilla HTML/JS for anchors + form controls
+
+---
+
+## 📜 License
+
+MIT License.

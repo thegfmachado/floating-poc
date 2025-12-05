@@ -1,13 +1,105 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>floating-poc</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>floating-poc</title>
+</head>
+
+<body>
+  <div id="app">
+    <div class="demo-container">
+
+      <h2 class="demo-title">Floating Strategy Demo</h2>
+
+      <!-- Controls Panel (outside React) -->
+      <div id="controls" class="controls-panel">
+
+        <!-- Mode -->
+        <div class="control-group">
+          <div class="control-label">Mode</div>
+
+          <label class="radio-option">
+            <input id="mode" type="radio" name="mode" value="default" checked />
+            <span>Default</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="mode" value="caret" />
+            <span>Caret</span>
+          </label>
+        </div>
+
+        <!-- Placement -->
+        <div class="control-group">
+          <label class="control-label" for="placementControl">Placement</label>
+          <select id="placementControl" class="control-select">
+            <option value="top">top</option>
+            <option value="top-start">top-start</option>
+            <option value="top-end">top-end</option>
+            <option value="bottom">bottom</option>
+            <option value="bottom-start">bottom-start</option>
+            <option value="bottom-end">bottom-end</option>
+            <option value="left">left</option>
+            <option value="left-start">left-start</option>
+            <option value="left-end">left-end</option>
+            <option value="right">right</option>
+            <option value="right-start">right-start</option>
+            <option value="right-end">right-end</option>
+          </select>
+        </div>
+
+        <!-- Offset -->
+        <div class="control-group">
+          <label class="control-label" for="offsetControl">
+            Offset: <span id="offsetValue">8</span>px
+          </label>
+          <input id="offsetControl" class="control-range" type="range" min="0" max="50" value="8" />
+        </div>
+
+        <!-- Element Type -->
+        <div class="control-group">
+          <div class="control-label">Element Type</div>
+
+          <label class="radio-option">
+            <input type="radio" name="elementType" value="button" checked />
+            <span>Button</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="elementType" value="input" />
+            <span>Input</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="elementType" value="textarea" />
+            <span>Textarea</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- this element will dispatch events for the children -->
+      <div id="event-anchor">
+
+        <!-- this 3 elements are the anchor elements for the floating element -->
+        <button id="preview-button" class="demo-button">
+          Hover here…
+        </button>
+
+        <input id="preview-input" class="demo-input" placeholder="Type here…" />
+
+        <textarea id="preview-textarea" class="demo-textarea" placeholder="Type here…"></textarea>
+
+        <!-- React renders here, and floating element will be within it -->
+        <div id="root"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/index.ts"></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
